@@ -24,12 +24,17 @@ export class UserController {
 
   @Post()
   async createUser(@Body() userData: CreateUserDto): Promise<any> {
-    const { name, email, password, hp } = userData;
+    const { name, email, password, hp, nik } = userData;
 
     // Periksa apakah email sudah digunakan
-    const existingUser = await this.userService.findByEmail(email);
+    const existingUser = await this.userService.findByNIK(nik);
     if (existingUser) {
-      return createResponse("400", "email already exists", null);
+      return createResponse("error", "nik already exists", null);
+    }
+
+    const existingUserEmail = await this.userService.findByEmail(email);
+    if (existingUserEmail) {
+      return createResponse("error", "email already exists", null);
     }
 
     // Hash password sebelum disimpan
@@ -40,25 +45,26 @@ export class UserController {
       name,
       email,
       password: hashedPassword,
-      isActive: 1, // Set isActive menjadi 1 (aktif) pada saat registrasi
-      hp: hp, // Tambahkan field hp pada user
+      isActive: 1,
+      hp: hp,
+      nik,
     });
 
     return createResponse("200", "success", classToPlain(newUser));
   }
 
   @Post('login')
-  async login(@Body() loginDto: { email: string; password: string }) {
-    const { email, password } = loginDto;
+  async login(@Body() loginDto: { nik: string; password: string }) {
+    const { nik, password } = loginDto;
 
     // Validasi user
-    const user = await this.userService.validateUser(email, password);
+    const user = await this.userService.validateUser(nik, password);
     if (!user) {
       return createResponse("200", "password / email salah", null);
     }
 
     // Buat JWT
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.nik };
     const token = this.jwtService.sign(payload); // Pastikan menggunakan JwtService
 
     // return {

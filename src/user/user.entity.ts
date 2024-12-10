@@ -14,6 +14,9 @@ export class User {
   email: string;
 
   @Column()
+  nik: string;
+
+  @Column()
   @Exclude()
   password: string;
 
@@ -40,6 +43,9 @@ export class CreateUserDto {
 
   @IsEmail()
   email: string;
+
+  @IsNotEmpty()
+  nik: string;
 
   @IsNotEmpty()
   @MinLength(6)

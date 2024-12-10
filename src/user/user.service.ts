@@ -20,12 +20,16 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
+  async findByNIK(nik: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { nik } });
+  }
+
   async findByEmail(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async validateUser(email: string, password: string): Promise<User | null> {
-    const user = await this.findByEmail(email);
+  async validateUser(nik: string, password: string): Promise<User | null> {
+    const user = await this.findByNIK(nik);
     if (user && (await bcrypt.compare(password, user.password))) {
       return user; // Return user if password is valid
     }
