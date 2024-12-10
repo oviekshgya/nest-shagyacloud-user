@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
-import { UserService, } from './user.service';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { UserService, UserProfileDto } from './user.service';
 import { User, CreateUserDto } from './user.entity';
 import { classToPlain } from 'class-transformer';
 import { createResponse } from 'src/pkg/response.utils';
@@ -68,14 +68,17 @@ export class UserController {
     const payload = { sub: user.id, nik: user.nik };
     const token = this.jwtService.sign(payload); // Pastikan menggunakan JwtService
 
-    // return {
-    //   message: 'Login successful',
-    //   token: token,
-    // };
+    
     return createResponse("200", "Login successful", {
       token: token,
       });
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getProfile(@Req() req): Promise<UserProfileDto> {
+    const userId = req.user.id;  // ID pengguna yang didapatkan dari token JWT
+    return this.userService.getUserProfileById(userId);
+  }
   
 }

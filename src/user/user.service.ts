@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IntegerType, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
 
@@ -56,4 +56,38 @@ export class UserService {
     return null; // Return null if authentication fails
   }
 
+  async getUserProfileById(userId: number): Promise<UserProfileDto> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const userProfileDto: UserProfileDto = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      nik: user.nik,
+      hp: user.hp,
+      jabatan: user.jabatan,
+      isActive: user.isActive,
+      created_at: user.created_at,
+      updated_at: user.updated_at,
+    };
+
+    return userProfileDto;
+  }
+
+}
+
+export class UserProfileDto {
+  id: number;
+  name: string;
+  email: string;
+  nik: string;
+  hp: string;
+  jabatan: string;
+  isActive: number;
+  created_at: Date;
+  updated_at: Date;
 }
