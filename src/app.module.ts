@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/database.config';
 import { UserModule } from './user/user.module';
+import { HeaderMiddleware, BasicAuthMiddleware } from './middleware/header.middleware';
 
 @Module({
   imports: [
@@ -18,4 +19,10 @@ import { UserModule } from './user/user.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HeaderMiddleware).forRoutes('*');
+    consumer.apply(BasicAuthMiddleware).forRoutes('*');
+    // consumer.apply(ApiKeyMiddleware).forRoutes(UserController); // Untuk controller tertentu
+  }
+}
