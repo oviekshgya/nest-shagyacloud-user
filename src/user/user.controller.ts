@@ -24,7 +24,7 @@ export class UserController {
 
   @Post()
   async createUser(@Body() userData: CreateUserDto): Promise<any> {
-    const { name, email, password } = userData;
+    const { name, email, password, hp } = userData;
 
     // Periksa apakah email sudah digunakan
     const existingUser = await this.userService.findByEmail(email);
@@ -40,6 +40,8 @@ export class UserController {
       name,
       email,
       password: hashedPassword,
+      isActive: 1, // Set isActive menjadi 1 (aktif) pada saat registrasi
+      hp: hp, // Tambahkan field hp pada user
     });
 
     return createResponse("200", "success", classToPlain(newUser));
