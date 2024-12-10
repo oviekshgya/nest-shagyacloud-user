@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { UserService, } from './user.service';
 import { User, CreateUserDto } from './user.entity';
 import { classToPlain } from 'class-transformer';
