@@ -23,6 +23,9 @@ export class User {
   @Column()
   hp: string;
 
+  @Column()
+  jabatan: string;
+
   @Column({ default: 1 }) // `isActive` akan memiliki nilai default 1 (aktif)
   isActive: number;
 
@@ -46,6 +49,9 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   nik: string;
+
+  @IsNotEmpty()
+  jabatan: string;
 
   @IsNotEmpty()
   @MinLength(6)

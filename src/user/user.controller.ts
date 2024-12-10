@@ -24,7 +24,7 @@ export class UserController {
 
   @Post()
   async createUser(@Body() userData: CreateUserDto): Promise<any> {
-    const { name, email, password, hp, nik } = userData;
+    const { name, email, password, hp, nik, jabatan } = userData;
 
     // Periksa apakah email sudah digunakan
     const existingUser = await this.userService.findByNIK(nik);
@@ -48,6 +48,7 @@ export class UserController {
       isActive: 1,
       hp: hp,
       nik,
+      jabatan
     });
 
     return createResponse("200", "success", classToPlain(newUser));
