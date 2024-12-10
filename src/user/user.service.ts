@@ -14,10 +14,30 @@ export class UserService {
   findAll(): Promise<User[]> {
     return this.userRepository.find();
   }
-
   async create(user: Partial<User>): Promise<User> {
-    const newUser = this.userRepository.create(user);
-    return await this.userRepository.save(newUser);
+    const queryRunner = this.userRepository.manager.connection.createQueryRunner();
+
+    // Memulai transaksi
+    await queryRunner.startTransaction();
+    try {
+      // Buat user baru
+      const newUser = this.userRepository.create(user);
+
+      // Simpan user dalam transaksi
+      const savedUser = await queryRunner.manager.save(newUser);
+
+      // Commit transaksi jika berhasil
+      await queryRunner.commitTransaction();
+
+      return savedUser;
+    } catch (error) {
+      // Rollback transaksi jika ada kesalahan
+      await queryRunner.rollbackTransaction();
+      throw error; // Melemparkan error agar bisa ditangani oleh handler
+    } finally {
+      // Menutup query runner
+      await queryRunner.release();
+    }
   }
 
   async findByNIK(nik: string): Promise<User | undefined> {
