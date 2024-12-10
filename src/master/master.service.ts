@@ -11,8 +11,10 @@ export class MasterVendorService {
     private readonly masterVendorRepository: Repository<MasterVendor>,
   ) {}
 
-  findAll(): Promise<MasterVendor[]> {
-    return this.masterVendorRepository.find();
+  findAll(isActive: number): Promise<MasterVendor[]> {
+    return this.masterVendorRepository.find({
+      where: { isActive }, // Filter dinamis berdasarkan isActive
+    });
   }
 
 }
