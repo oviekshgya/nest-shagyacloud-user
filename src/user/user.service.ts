@@ -30,7 +30,7 @@ export class UserService {
 
   async validateUser(nik: string, password: string): Promise<User | null> {
     const user = await this.findByNIK(nik);
-    if (user && (await bcrypt.compare(password, user.password))) {
+    if (user && (await bcrypt.compare(password, user.password)) && user.isActive === 1) {
       return user; // Return user if password is valid
     }
     return null; // Return null if authentication fails

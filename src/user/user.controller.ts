@@ -64,7 +64,7 @@ export class UserController {
     }
 
     // Buat JWT
-    const payload = { sub: user.id, email: user.nik };
+    const payload = { sub: user.id, nik: user.nik };
     const token = this.jwtService.sign(payload); // Pastikan menggunakan JwtService
 
     // return {
