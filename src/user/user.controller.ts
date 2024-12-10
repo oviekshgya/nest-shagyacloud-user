@@ -1,14 +1,18 @@
-import { Controller, Get, Post, Body, UseGuards, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { UserService, } from './user.service';
 import { User, CreateUserDto } from './user.entity';
 import { classToPlain } from 'class-transformer';
 import { createResponse } from 'src/pkg/response.utils';
 import { JwtAuthGuard } from '../middleware/header.middleware';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService, 
+    private readonly jwtService: JwtService,
+  ) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
@@ -40,4 +44,29 @@ export class UserController {
 
     return createResponse("200", "success", classToPlain(newUser));
   }
+
+  @Post('login')
+  async login(@Body() loginDto: { email: string; password: string }) {
+    const { email, password } = loginDto;
+
+    // Validasi user
+    const user = await this.userService.validateUser(email, password);
+    if (!user) {
+      return createResponse("200", "password / email salah", null);
+    }
+
+    // Buat JWT
+    const payload = { sub: user.id, email: user.email };
+    const token = this.jwtService.sign(payload); // Pastikan menggunakan JwtService
+
+    // return {
+    //   message: 'Login successful',
+    //   token: token,
+    // };
+    return createResponse("200", "Login successful", {
+      token: token,
+      });
+  }
+
+  
 }

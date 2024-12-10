@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/database.config';
 import { UserModule } from './user/user.module';
 import { HeaderMiddleware, BasicAuthMiddleware } from './middleware/header.middleware';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -15,6 +17,11 @@ import { HeaderMiddleware, BasicAuthMiddleware } from './middleware/header.middl
     }),
     TypeOrmModule.forRoot(databaseConfig),
     UserModule,
+    PassportModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'defaultSecretKey',
+      signOptions: { expiresIn: '1h' }, // Token berlaku selama 1 jam
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
