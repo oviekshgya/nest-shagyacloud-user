@@ -22,5 +22,16 @@ export class MasterVendorController {
    
     return createResponse("success", "data retrieved", classToPlain(master));
   }
+
+  @Get("jabatan")
+  @UseGuards(JwtAuthGuard)
+  async findAllJabatan(): Promise<any> {
+    const master: MasterVendor[] = await this.masteService.findAllJabatan(1);
+    if (master.length<= 0) {
+      return createResponse("error", "Data master jabatan kosong", null);
+    }
+   
+    return createResponse("success", "data retrieved", classToPlain(master));
+  }
   
 }
