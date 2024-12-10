@@ -1,6 +1,6 @@
-import { Injectable, NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NestMiddleware, HttpException, HttpStatus, UnauthorizedException, ExecutionContext, CanActivate } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import { createResponse } from 'src/pkg/response.utils';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class HeaderMiddleware implements NestMiddleware {
@@ -44,5 +44,38 @@ export class BasicAuthMiddleware implements NestMiddleware {
 
     // Validasi username dan password (misalnya, hardcoded)
     return username === 'abcd' && password === 'abcd';
+  }
+}
+
+@Injectable()
+export class JwtAuthGuard implements CanActivate {
+  canActivate(context: ExecutionContext): boolean {
+    const request = context.switchToHttp().getRequest<Request>();
+    const authHeader = request.headers['authorization'];
+
+    if (!authHeader) {
+      throw new UnauthorizedException('Authorization header missing');
+    }
+
+    const [scheme, token] = authHeader.split(' ');
+
+    if (scheme !== 'Bearer' || !token) {
+      throw new UnauthorizedException('Invalid authorization header format');
+    }
+
+    try {
+      const secretKey = process.env.JWT_SECRET || 'defaultSecretKey';
+      const decoded = jwt.verify(token, secretKey);
+      request.user = decoded; // Simpan informasi user di request untuk controller
+      return true; // Izinkan akses jika token valid
+    } catch (error) {
+      if (error.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('Token expired');
+      } else if (error.name === 'JsonWebTokenError') {
+        throw new UnauthorizedException('Invalid token');
+      } else {
+        throw new UnauthorizedException('Invalid or expired token');
+      }
+    }
   }
 }

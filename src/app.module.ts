@@ -1,4 +1,4 @@
-import { Module, MiddlewareConsumer } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -22,7 +22,8 @@ import { HeaderMiddleware, BasicAuthMiddleware } from './middleware/header.middl
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(HeaderMiddleware).forRoutes('*');
-    consumer.apply(BasicAuthMiddleware).forRoutes('*');
+    consumer.apply(BasicAuthMiddleware).forRoutes({ path: 'v1/specific-route', method: RequestMethod.GET });
+    //consumer.apply(BasicAuthMiddleware).forRoutes('*');
     // consumer.apply(ApiKeyMiddleware).forRoutes(UserController); // Untuk controller tertentu
   }
 }

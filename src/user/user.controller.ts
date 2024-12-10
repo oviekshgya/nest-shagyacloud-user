@@ -1,14 +1,16 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
 import { classToPlain } from 'class-transformer';
 import { createResponse } from 'src/pkg/response.utils';
+import { JwtAuthGuard } from '../middleware/header.middleware';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async findAll(): Promise<any> {
     const users: User[] = await this.userService.findAll();
    
