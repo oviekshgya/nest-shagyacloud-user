@@ -57,7 +57,7 @@ export class UserService {
   }
 
   async getUserProfileById(userId: number): Promise<UserProfileDto> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['company'], });
     
     if (!user) {
       throw new Error('User not found');
@@ -73,6 +73,7 @@ export class UserService {
       isActive: user.isActive,
       created_at: user.created_at,
       updated_at: user.updated_at,
+      companyname: user.company.name, 
     };
 
     return userProfileDto;
@@ -90,4 +91,5 @@ export class UserProfileDto {
   isActive: number;
   created_at: Date;
   updated_at: Date;
+  companyname: string;
 }

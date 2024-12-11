@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany} from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { User } from 'src/user/user.entity';
 
 @Entity('master_vendor')
 export class MasterVendor {
@@ -63,4 +64,7 @@ export class MasterCompany {
   @UpdateDateColumn({ type: 'timestamp' })
   @Exclude()
   updated_at: Date;  // Tanggal dan waktu saat record diperbarui
+
+  @OneToMany(() => User, (user) => user.company)
+  users: User[];
 }
