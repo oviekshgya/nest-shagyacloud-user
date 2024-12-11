@@ -20,7 +20,7 @@ export class UserController {
     const users: User[] = await this.userService.findAll();
    
     return createResponse("success", "users retrieved", classToPlain(users));
-  }
+  }c
 
   @Post()
   async createUser(@Body() userData: CreateUserDto): Promise<any> {
