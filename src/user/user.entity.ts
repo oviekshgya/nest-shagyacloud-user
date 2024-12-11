@@ -29,6 +29,9 @@ export class User {
   @Column({ default: 1 }) // `isActive` akan memiliki nilai default 1 (aktif)
   isActive: number;
 
+  @Column() // `isActive` akan memiliki nilai default 1 (aktif)
+  idCompany: number;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;  // Tanggal dan waktu saat record dibuat
 
@@ -52,6 +55,9 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   jabatan: string;
+
+  @IsNotEmpty()
+  idCompany: number;
 
   @IsNotEmpty()
   @MinLength(6)

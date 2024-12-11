@@ -24,7 +24,7 @@ export class UserController {
 
   @Post()
   async createUser(@Body() userData: CreateUserDto): Promise<any> {
-    const { name, email, password, hp, nik, jabatan } = userData;
+    const { name, email, password, hp, nik, jabatan, idCompany } = userData;
 
     // Periksa apakah email sudah digunakan
     const existingUser = await this.userService.findByNIK(nik);
@@ -48,7 +48,8 @@ export class UserController {
       isActive: 1,
       hp: hp,
       nik,
-      jabatan
+      jabatan,
+      idCompany,
     });
 
     return createResponse("200", "success", classToPlain(newUser));
@@ -75,10 +76,10 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get()
-  async getProfile(@Req() req): Promise<UserProfileDto> {
-    const userId = req.user.id;  // ID pengguna yang didapatkan dari token JWT
-    return this.userService.getUserProfileById(userId);
+  @Get('profile')
+  async getProfile(@Req() req): Promise<any> {
+    const data: UserProfileDto = await this.userService.getUserProfileById(req.user.sub);
+    return createResponse("success", "data retrieved", data);
   }
   
 }

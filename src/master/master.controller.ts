@@ -33,5 +33,17 @@ export class MasterVendorController {
    
     return createResponse("success", "data retrieved", classToPlain(master));
   }
+
+
+  @Get("company")
+  @UseGuards(JwtAuthGuard)
+  async findAllCompany(): Promise<any> {
+    const master: MasterVendor[] = await this.masteService.findAllCompany(1);
+    if (master.length<= 0) {
+      return createResponse("error", "Data master company kosong", null);
+    }
+   
+    return createResponse("success", "data retrieved", classToPlain(master));
+  }
   
 }
