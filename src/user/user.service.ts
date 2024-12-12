@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { IntegerType, Repository } from 'typeorm';
 import { User } from './user.entity';
 import * as bcrypt from 'bcrypt';
+import { Absen } from './absen.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Absen)
+    private readonly absenRepository: Repository<Absen>,
   ) {}
 
   findAll(): Promise<User[]> {
@@ -77,6 +80,12 @@ export class UserService {
     };
 
     return userProfileDto;
+  }
+
+  findAllAbsen(idUser: number): Promise<Absen[]> {
+    return this.absenRepository.find({
+      where: { idUser }, 
+    });
   }
 
 }

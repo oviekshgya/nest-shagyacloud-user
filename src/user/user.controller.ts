@@ -6,6 +6,7 @@ import { createResponse } from 'src/pkg/response.utils';
 import { JwtAuthGuard } from '../middleware/header.middleware';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Absen } from './absen.entity';
 
 @Controller('users')
 export class UserController {
@@ -80,6 +81,17 @@ export class UserController {
   async getProfile(@Req() req): Promise<any> {
     const data: UserProfileDto = await this.userService.getUserProfileById(req.user.sub);
     return createResponse("success", "data retrieved", data);
+  }
+
+  @Get("absen")
+  @UseGuards(JwtAuthGuard)
+  async findAllCompany(@Req() req): Promise<any> {
+    const master: Absen[] = await this.userService.findAllAbsen(req.user.sub);
+    if (master.length<= 0) {
+      return createResponse("error", "Data master company kosong", null);
+    }
+   
+    return createResponse("success", "data retrieved", classToPlain(master));
   }
   
 }
