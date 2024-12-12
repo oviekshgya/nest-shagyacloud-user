@@ -1,7 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { MasterCompany } from 'src/master/master.entity';
+import { Absen } from './absen.entity';
+
 
 @Entity('users')
 export class User {
@@ -37,11 +39,15 @@ export class User {
   created_at: Date;  // Tanggal dan waktu saat record dibuat
 
   @UpdateDateColumn({ type: 'timestamp' })
-  updated_at: Date;  // Tanggal dan waktu saat record diperbarui
+  updated_at: Date; 
 
   @ManyToOne(() => MasterCompany, (company) => company.users, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'idCompany' })
-  company: MasterCompany;
+    company: MasterCompany;
+  
+  @OneToMany(() => Absen, (absen) => absen.user, { cascade: true })
+  absens: Absen[];
+
 }
 
 
@@ -68,3 +74,28 @@ export class CreateUserDto {
   @MinLength(6)
   password: string;
 }
+
+
+// @Entity('absen')
+// export class Absen {
+//   @PrimaryGeneratedColumn()
+//   id: number;
+
+//   @Column()
+//   idUser: number;
+
+//   @CreateDateColumn({ type: 'datetime' })
+//   tanggal: Date;
+
+//   @Column()
+//   fileSelfie: string;
+
+//   @Column()
+//   location: string;
+
+//   @CreateDateColumn({ type: 'timestamp' })
+//   created_at: Date;  // Tanggal dan waktu saat record dibuat
+
+//   @UpdateDateColumn({ type: 'timestamp' })
+//   updated_at: Date;
+// }
