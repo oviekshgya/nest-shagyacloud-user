@@ -82,10 +82,22 @@ export class UserService {
     return userProfileDto;
   }
 
-  findAllAbsen(idUser: number): Promise<Absen[]> {
-    return this.absenRepository.find({
-      where: { idUser }, relations: ['user'],
-    });
+  async findAllAbsen(idUser: number): Promise<Absen[]> {
+    // return this.absenRepository.find({
+    //   where: { idUser }, relations: ['user'],
+    // });
+    return this.absenRepository
+    .createQueryBuilder('absen')
+    .leftJoinAndSelect('absen.user', 'user') // Join ke tabel user
+    .select([
+      'absen.location',
+      'absen.fileSelfie',
+      'absen.created_at',
+      'user.id', 
+      'user.name',
+    ])
+    .where('absen.idUser = :idUser', { idUser })
+    .getMany();
   }
 
 }
