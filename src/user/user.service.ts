@@ -84,7 +84,7 @@ export class UserService {
 
   findAllAbsen(idUser: number): Promise<Absen[]> {
     return this.absenRepository.find({
-      where: { idUser }, 
+      where: { idUser }, relations: ['user'],
     });
   }
 
