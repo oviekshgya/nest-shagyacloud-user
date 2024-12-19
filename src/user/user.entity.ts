@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { MasterCompany } from 'src/master/master.entity';
@@ -41,7 +41,7 @@ export class User {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date; 
 
-  @ManyToOne(() => MasterCompany, (company) => company.users, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @OneToOne(() => MasterCompany, (company) => company.users, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'idCompany' })
     company: MasterCompany;
   
