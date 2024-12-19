@@ -82,23 +82,31 @@ export class UserService {
     return userProfileDto;
   }
 
-  async findAllAbsen(idUser: number): Promise<Absen[]> {
-    // return this.absenRepository.find({
-    //   where: { idUser }, relations: ['user'],
-    // });
-    return this.absenRepository
-    .createQueryBuilder('absen')
-    .leftJoinAndSelect('absen.user', 'user') // Join ke tabel user
-    .select([
-      'absen.location',
-      'absen.fileSelfie',
-      'absen.created_at',
-      'user.id', 
-      'user.name',
-    ])
-    .where('absen.idUser = :idUser', { idUser })
-    .getMany();
+  async findAllAbsen(idUser: number, page: number = 1, limit: number = 10): Promise<{ data: Absen[]; total: number }> {
+    const query = this.absenRepository
+      .createQueryBuilder('absen')
+      .leftJoinAndSelect('absen.user', 'user') // Join ke tabel user
+      .select([
+        'absen.id', // Jika perlu ID absen
+        'absen.location',
+        'absen.fileSelfie',
+        'absen.created_at',
+        'user.id',
+        'user.name',
+      ])
+      .where('absen.idUser = :idUser', { idUser })
+      .orderBy('absen.created_at', 'DESC') // Sortir berdasarkan waktu absen terbaru
+      .skip((page - 1) * limit)
+      .take(limit);
+  
+    const [data, total] = await query.getManyAndCount();
+  
+    return {
+      data,
+      total,
+    };
   }
+  
 
 }
 

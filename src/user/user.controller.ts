@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req, Query } from '@nestjs/common';
 import { UserService, UserProfileDto } from './user.service';
 import { User, CreateUserDto } from './user.entity';
 import { classToPlain } from 'class-transformer';
@@ -83,15 +83,26 @@ export class UserController {
     return createResponse("success", "data retrieved", data);
   }
 
-  @Get("absen")
+  @Get('absen')
   @UseGuards(JwtAuthGuard)
-  async findAllCompany(@Req() req): Promise<any> {
-    const master: Absen[] = await this.userService.findAllAbsen(req.user.sub);
-    if (master.length<= 0) {
-      return createResponse("error", "Data master company kosong", null);
+  async findAllAbsen(@Req() req, @Query('page') page: string = '1', @Query('limit') limit: string = '10',): Promise<any> {
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    const result = await this.userService.findAllAbsen(req.user.sub, pageNumber, limitNumber);
+
+    if (result.data.length === 0) {
+      return createResponse('error', 'Data absen kosong', null);
     }
-   
-    return createResponse("success", "data retrieved", classToPlain(master));
+
+    return createResponse('success', 'Data retrieved', {
+      data: classToPlain(result.data),
+      total: result.total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(result.total / limitNumber),
+    });
   }
+
   
 }
